@@ -26,13 +26,13 @@ jobs:
           DRY_RUN: true
 
       - run: |
-          IMAGE_NAME=$(echo "nordmartreview" | yq -e 's/\([[\/.*]\|\]\)/\\&/g')
-          TAG=$(echo ${{ steps.generate_tag.outputs.new_tag }})
-          echo "Repo ${IMAGE_NAME}"
-          echo "Tag ${TAG}"
-          echo "Updating values file in dev"
-          yq -i "s/^\(\s*version\s*:\s*\).*/\1${TAG}/" ./Chart.yaml
-          yq  -i "s/^\(\s*tag\s*:\s*\).*/\1${TAG}/" ./values.yaml
+          yq -i '.dependencies[0].version = "${{ steps.generate_operator_tag.outputs.new_tag }}"' ./Chart.yaml
+          yq -i '.version = "${{ steps.generate_operator_tag.outputs.new_tag }}"' ./Chart.yaml 
+          yq -i '.sample-app-helm.application.deployment.image.tag = "${{ steps.generate_operator_tag.outputs.new_tag }}"' ./values.yaml
+          echo "File updated"
+        name: 'Update Chart'
+    
+    
 
       # Commit back changes
       - name: Commit files
