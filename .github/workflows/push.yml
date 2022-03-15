@@ -3,7 +3,7 @@ name: nordmart-review-test
 on: push
 
 env:
-  URL: "https://github.com/bilalbokharee/gitops-config-template"
+  URL: "https://github.com/bilalbokharee/gitops-config-template/tree/main/01-gabbar/apps/01-stakater-nordmart-review/01-dev"
 
 jobs:
   update-versions:
