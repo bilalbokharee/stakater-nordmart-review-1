@@ -25,15 +25,14 @@ jobs:
           DEFAULT_BUMP: patch
           DRY_RUN: true
 
-      - name: Update versions
-        run: |
-        IMAGE_NAME=$(echo "nordmartreview" | yq -e 's/\([[\/.*]\|\]\)/\\&/g')
-        TAG=$(echo ${{ steps.generate_tag.outputs.new_tag }})
-        echo "Repo ${IMAGE_NAME}"
-        echo "Tag ${TAG}"
-        echo "Updating values file in dev"
-        yq -i "s/^\(\s*version\s*:\s*\).*/\1${TAG}/" ./Chart.yaml
-        yq  -i "s/^\(\s*tag\s*:\s*\).*/\1${TAG}/" ./values.yaml
+      - run: |
+          IMAGE_NAME=$(echo "nordmartreview" | yq -e 's/\([[\/.*]\|\]\)/\\&/g')
+          TAG=$(echo ${{ steps.generate_tag.outputs.new_tag }})
+          echo "Repo ${IMAGE_NAME}"
+          echo "Tag ${TAG}"
+          echo "Updating values file in dev"
+          yq -i "s/^\(\s*version\s*:\s*\).*/\1${TAG}/" ./Chart.yaml
+          yq  -i "s/^\(\s*tag\s*:\s*\).*/\1${TAG}/" ./values.yaml
 
       # Commit back changes
       - name: Commit files
