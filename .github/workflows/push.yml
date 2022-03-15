@@ -1,0 +1,51 @@
+name: nordmart-review-test
+
+on: push
+
+env:
+  URL: "https://github.com/bilalbokharee/gitops-config-template"
+
+jobs:
+  update-versions:
+    name: Update Versions
+    runs-on: stakater/pipeline-toolbox:v0.0.2
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+      
+      - name: Generate Tag
+        id: generate_tag
+        uses: anothrNick/github-tag-action@1.26.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.STAKATER_GITHUB_TOKEN }}
+          WITH_V: false
+          DEFAULT_BUMP: patch
+          DRY_RUN: true
+
+      - name: Update versions
+        run: |
+        IMAGE_NAME=$(echo "nordmartreview" | yq -e 's/\([[\/.*]\|\]\)/\\&/g')
+        TAG=$(echo ${{ steps.generate_tag.outputs.new_tag }})
+        echo "Repo ${IMAGE_NAME}"
+        echo "Tag ${TAG}"
+        echo "Updating values file in dev"
+        yq -i "s/^\(\s*version\s*:\s*\).*/\1${TAG}/" ./Chart.yaml
+        yq  -i "s/^\(\s*tag\s*:\s*\).*/\1${TAG}/" ./values.yaml
+
+      # Commit back changes
+      - name: Commit files
+        run: |
+          git config --local user.email "github-root@stakater.com"
+          git config --local user.name "stakater-github-root"
+          git status
+          git add .
+          git commit -m "[skip-ci] Update artifacts" -a
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.STAKATER_GITHUB_TOKEN }}
+          branch: main
