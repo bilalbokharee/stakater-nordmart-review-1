@@ -38,7 +38,7 @@ jobs:
     
     
 
-      # Commit back changes
+      # Commit back chang
       - name: Commit files
         run: |
           git config --local user.email "github-root@stakater.com"
@@ -52,4 +52,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITOPS_GITHUB_TOKEN }}
+          repository: "bilalbokharee/gitops-config-template"
           branch: main
