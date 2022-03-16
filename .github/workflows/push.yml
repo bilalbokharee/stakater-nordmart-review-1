@@ -29,6 +29,7 @@ jobs:
       - run: |
           ls 
           pwd
+          echo "GENERATED_TAG= ${{ steps.generate_operator_tag.outputs.new_tag }}"
           yq -i '.dependencies[0].version = "${{ steps.generate_operator_tag.outputs.new_tag }}"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml
           yq -i '.version = "${{ steps.generate_operator_tag.outputs.new_tag }}"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml 
           yq -i '.sample-app-helm.application.deployment.image.tag = "${{ steps.generate_operator_tag.outputs.new_tag }}"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/values.yaml
