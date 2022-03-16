@@ -30,9 +30,9 @@ jobs:
           ls 
           pwd
           GENERATED_TAG="$(git rev-parse --short HEAD)"
-          yq -i ".dependencies[0].version = ${{ GENERATED_TAG }} " 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml
-          yq -i ".version = ${{ GENERATED_TAG }} " 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml 
-          yq -i ".sample-app-helm.application.deployment.image.tag = ${{ GENERATED_TAG }} " 01-gabbar/apps/01-stakater-nordmart-review/01-dev/values.yaml
+          yq -i ".dependencies[0].version = ${ GENERATED_TAG } " 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml
+          yq -i ".version = ${ GENERATED_TAG } " 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml 
+          yq -i ".sample-app-helm.application.deployment.image.tag = ${ GENERATED_TAG } " 01-gabbar/apps/01-stakater-nordmart-review/01-dev/values.yaml
           echo "File updated"
         name: 'Update Chart'
     
