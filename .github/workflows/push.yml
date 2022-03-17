@@ -8,52 +8,52 @@ env:
   DOCKER_FILE_PATH: Dockerfile
 
 jobs:
-  update-versions:
-    name: Update Versions
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          repository: "bilalbokharee/gitops-config-template"
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+  # update-versions:
+  #   name: Update Versions
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out code
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: "bilalbokharee/gitops-config-template"
+  #         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+  #         fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
       
-      - name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.4.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #     - name: Install SSH Client 🔑
+  #       uses: webfactory/ssh-agent@v0.4.0
+  #       with:
+  #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - run: |
-          ls 
-          pwd
-          GENERATED_TAG="$(git rev-parse --short HEAD)"
-          yq -i '.dependencies[0].version = "0.0.0"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml
-          yq -i '.version = "0.0.0"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml 
-          yq -i '.sample-app-helm.application.deployment.image.tag = "0.0.0"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/values.yaml
-          echo "File updated"
-        name: 'Update Chart'
+  #     - run: |
+  #         ls 
+  #         pwd
+  #         GENERATED_TAG="$(git rev-parse --short HEAD)"
+  #         yq -i '.dependencies[0].version = "0.0.0"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml
+  #         yq -i '.version = "0.0.0"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/Chart.yaml 
+  #         yq -i '.sample-app-helm.application.deployment.image.tag = "0.0.0"' 01-gabbar/apps/01-stakater-nordmart-review/01-dev/values.yaml
+  #         echo "File updated"
+  #       name: 'Update Chart'
     
     
 
-      # Commit back chang
-      - name: Commit files
-        run: |
-          git config --local user.email "github-root@stakater.com"
-          git config --local user.name "stakater-github-root"
-          git status
-          git diff
-          git add .
-          git commit -m "[skip-ci] Update artifacts" -a
+  #     # Commit back chang
+  #     - name: Commit files
+  #       run: |
+  #         git config --local user.email "github-root@stakater.com"
+  #         git config --local user.name "stakater-github-root"
+  #         git status
+  #         git diff
+  #         git add .
+  #         git commit -m "[skip-ci] Update artifacts" -a
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.2.5
-        with:
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          repository-name: "bilalbokharee/gitops-config-template"
-          branch: main
-          target-folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
-          folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
+  #     - name: Deploy 🚀
+  #       uses: JamesIves/github-pages-deploy-action@v4.2.5
+  #       with:
+  #         ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         repository-name: "bilalbokharee/gitops-config-template"
+  #         branch: main
+  #         target-folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
+  #         folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
   
   docker-quay:
     name: Docker quay.io
@@ -78,7 +78,7 @@ jobs:
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
         registry: quay.io/bilalbokharee
-        username: bilalbokharee
+        username: bilalbokharee+ramesses
         password: 0IVPR0ZI20YQA24BN9HKQN3G77I0PF24IZPA87QPIQUGCJ69WOO3AHCHCOKEXT62
 
     - name: Print image url
