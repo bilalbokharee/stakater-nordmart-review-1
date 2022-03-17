@@ -54,9 +54,10 @@ jobs:
           git add .
           git commit -m "[skip-ci] Update artifacts" -a
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          repository: "bilalbokharee/gitops-config-template"
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          repository-name: "bilalbokharee/gitops-config-template"
           branch: main
+          target-folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
