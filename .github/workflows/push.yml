@@ -5,11 +5,12 @@ on: push
 env:
   URL: "bilalbokharee/gitops-config-template"
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+  DOCKER_FILE_PATH: Dockerfile
 
 jobs:
   update-versions:
     name: Update Versions
-    runs-on: ubuntu-latest #stakater/pipeline-toolbox:v0.0.2
+    runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -22,15 +23,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.4.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      
-      # - name: Generate Tag
-      #   id: generate_tag
-      #   uses: anothrNick/github-tag-action@1.26.0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITOPS_GITHUB_TOKEN }}
-      #     WITH_V: false
-      #     DEFAULT_BUMP: patch
-      #     DRY_RUN: true
 
       - run: |
           ls 
@@ -62,3 +54,32 @@ jobs:
           branch: main
           target-folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
           folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
+  
+  docker-quay:
+    name: Docker quay.io
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build Image
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: my-app
+        tags: latest ${{ github.sha }}
+        containerfiles: |
+          ./Containerfile
+
+    - name: Push To quay.io
+      id: push-to-quay
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        tags: ${{ steps.build-image.outputs.tags }}
+        registry: quay.io/bilalbokharee
+        username: bilalbokharee
+        password: 0IVPR0ZI20YQA24BN9HKQN3G77I0PF24IZPA87QPIQUGCJ69WOO3AHCHCOKEXT62
+
+    - name: Print image url
+      run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
