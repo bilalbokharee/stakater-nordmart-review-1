@@ -4,6 +4,7 @@ on: push
 
 env:
   URL: "bilalbokharee/gitops-config-template"
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
   update-versions:
