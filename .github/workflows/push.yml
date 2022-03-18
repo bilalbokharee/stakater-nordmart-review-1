@@ -69,9 +69,6 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v2
 
-      - name: Install latest podman
-        run: |
-          bash .github/install_latest_podman.sh
       # Build image using Buildah action
       - name: Build Image
         id: build_image
