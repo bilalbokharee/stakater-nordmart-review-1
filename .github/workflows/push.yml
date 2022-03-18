@@ -6,6 +6,10 @@ env:
   URL: "bilalbokharee/gitops-config-template"
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
   DOCKER_FILE_PATH: Dockerfile
+  IMAGE_REGISTRY: quay.io
+  IMAGE_NAMESPACE: bilalbokharee
+  IMAGE_NAME: nordmart-test
+  IMAGE_TAGS: v1 ${{ github.sha }}
 
 jobs:
   # update-versions:
@@ -54,32 +58,53 @@ jobs:
   #         branch: main
   #         target-folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
   #         folder: "01-gabbar/apps/01-stakater-nordmart-review/01-dev"
-  
-  docker-quay:
-    name: Docker quay.io
-    runs-on: ubuntu-latest
+
+  login-and-push:
+    name: Login and push image to Quay.io
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        install_latest: [ true, false ]
 
     steps:
-    - uses: actions/checkout@v2
 
-    - name: Build Image
-      id: build-image
-      uses: redhat-actions/buildah-build@v2
-      with:
-        image: my-app
-        tags: latest ${{ github.sha }}
-        containerfiles: |
-          ./Dockerfile
+      # Checkout push-to-registry action github repository
+      - name: Checkout Push to Registry action
+        uses: actions/checkout@v2
 
-    - name: Push To quay.io
-      id: push-to-quay
-      uses: redhat-actions/push-to-registry@v2
-      with:
-        image: ${{ steps.build-image.outputs.image }}
-        tags: ${{ steps.build-image.outputs.tags }}
-        registry: quay.io/bilalbokharee/docker
-        username: bilalbokharee+ramesses
-        password: 0IVPR0ZI20YQA24BN9HKQN3G77I0PF24IZPA87QPIQUGCJ69WOO3AHCHCOKEXT62
+      - name: Install latest podman
+        if: matrix.install_latest
+        run: |
+          bash .github/install_latest_podman.sh
+      # Build image using Buildah action
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          layers: false
+          tags: ${{ env.IMAGE_TAGS }}
+          dockerfiles: |
+            ./Dockerfile
+      # Authenticate to container image registry to push the image
+      - name: Podman Login
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: quay.io
+          username: bilalbokharee+ramesses
+          password: TFCNVYDVTSAJCV3K99KJCPN2EWBOJUR0CT2GUQ5I9FX1AV9PH9QETROCR6O8Z4D3
 
-    - name: Print image url
-      run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
+      # Push the image to Quay.io (Image Registry)
+      - name: Push To Quay
+        uses: ./
+        id: push
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}
+          extra-args: |
+            --disable-content-trust
+      - name: Echo outputs
+        run: |
+          echo "${{ toJSON(steps.push.outputs) }}"
