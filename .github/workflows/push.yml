@@ -68,6 +68,8 @@ jobs:
       # Checkout push-to-registry action github repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
 
 
       - name: Generate Tag
