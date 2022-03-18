@@ -69,6 +69,17 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v2
 
+
+      - name: Generate Tag
+        id: generate_tag
+        uses: anothrNick/github-tag-action@1.38.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: false
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: main
+          DRY_RUN: true
+
       # Build image using Buildah action
       - name: Build Image
         id: build_image
@@ -76,7 +87,7 @@ jobs:
         with:
           image: ${{ env.IMAGE_NAME }}
           layers: false
-          tags: ${{ env.IMAGE_TAGS }}
+          tags: ${{ steps.generate_tag.outputs.new_tag }}
           dockerfiles: |
             ./Dockerfile
       # Authenticate to container image registry to push the image
