@@ -79,7 +79,7 @@ jobs:
           DEFAULT_BUMP: patch
           RELEASE_BRANCHES: main
           INITIAL_VERSION: 0.0.0
-          
+
       # Build image using Buildah action
       - name: Build Image
         id: build_image
@@ -111,3 +111,22 @@ jobs:
       - name: Echo outputs
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
+            # Publish helm chart
+
+      - name: Publish Helm chart
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          branch: main
+          repository: nordmart-test
+          target_dir: docs
+          token: ${{ secrets.QUAY_ROBOT }}
+          charts_dir: deploy/
+          charts_url: quay.io/bilalbokharee
+          owner: stakater
+          linting: on
+          commit_username: bilalbokharee_ramesses
+          commit_email: bilal.bokharee@stakater.com
+
+      - name: Remove integration-config from charts
+        run: |
+          rm charts/tenant-operator/templates/owner_role.yaml
