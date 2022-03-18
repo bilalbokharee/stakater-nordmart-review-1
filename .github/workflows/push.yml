@@ -9,7 +9,7 @@ env:
   IMAGE_REGISTRY: quay.io
   IMAGE_NAMESPACE: bilalbokharee
   IMAGE_NAME: nordmart-test
-  IMAGE_TAGS: v1 ${{ github.sha }}
+  IMAGE_TAGS: 0.0.1
 
 jobs:
   # update-versions:
