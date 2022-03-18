@@ -77,9 +77,9 @@ jobs:
       with:
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
-        registry: quay.io/bilalbokharee
+        registry: quay.io/bilalbokharee/docker
         username: bilalbokharee+ramesses
-        password: Kremlin69_ #test
+        password: 0IVPR0ZI20YQA24BN9HKQN3G77I0PF24IZPA87QPIQUGCJ69WOO3AHCHCOKEXT62
 
     - name: Print image url
       run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
