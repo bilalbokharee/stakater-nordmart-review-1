@@ -1,6 +1,6 @@
 # stakater-nordmart-review
 
-Sprindzfgxfhgdfghg Boot microservice for product review
+SpringBoot microservice for product review
 
 ## Introduction
 
