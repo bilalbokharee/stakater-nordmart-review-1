@@ -26,6 +26,3 @@ spec:
             value: $(params.revision)
         taskRef:
           name: git-clone
-        workspaces:
-          - name: output
-            workspace: output
