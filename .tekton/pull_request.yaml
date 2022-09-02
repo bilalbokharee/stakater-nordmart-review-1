@@ -28,4 +28,4 @@ spec:
           name: git-clone
         workspaces:
           - name: output
-            workspace: source
+            workspace: output
